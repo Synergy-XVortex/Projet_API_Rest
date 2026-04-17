@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 import com.eseo.academic.entity.Evaluation;
 
 @Repository
-public interface EvaluationRepository extends JpaRepository<Evaluation, String> {}
+public interface EvaluationRepository extends JpaRepository<Evaluation, String> {
+}

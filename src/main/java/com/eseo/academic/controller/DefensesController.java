@@ -16,7 +16,6 @@ public class DefensesController implements DefensesApi {
     @Autowired
     private DefenseService defenseService;
 
-    // GET /defenses : Liste toutes les soutenances planifiées
     @Override
     public ResponseEntity<List<DefenseDTO>> getDefenses() {
         List<DefenseDTO> defenses = defenseService.getAllDefenses();

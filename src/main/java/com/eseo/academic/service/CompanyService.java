@@ -22,13 +22,9 @@ public class CompanyService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Crée une nouvelle entreprise (Admin)
-     */
     public void saveCompany(CompanyDTO dto) {
         Company company = new Company();
-        // Le SIRET est fourni par le DTO, ce n'est pas un auto-incrément
-        company.setSiret(dto.getSiret()); 
+        company.setSiret(dto.getSiret());
         company.setCorporateName(dto.getCorporateName());
         company.setAddress(dto.getAddress());
         company.setContactEmail(dto.getContactEmail());
@@ -37,18 +33,12 @@ public class CompanyService {
         companyRepository.save(company);
     }
 
-    /**
-     * Récupère une entreprise par son SIRET (String)
-     */
     public CompanyDTO getCompanyBySiret(String siret) {
         Company company = companyRepository.findById(siret)
                 .orElseThrow(() -> new EntityNotFoundException("Company not found with SIRET: " + siret));
         return convertToDTO(company);
     }
 
-    /**
-     * Met à jour une entreprise via son SIRET
-     */
     public void updateCompany(String siret, CompanyDTO dto) {
         Company company = companyRepository.findById(siret)
                 .orElseThrow(() -> new EntityNotFoundException("Company not found"));
@@ -61,9 +51,6 @@ public class CompanyService {
         companyRepository.save(company);
     }
 
-    /**
-     * Supprime une entreprise par son SIRET
-     */
     public void deleteCompany(String siret) {
         if (!companyRepository.existsById(siret)) {
             throw new EntityNotFoundException("Cannot delete: Company not found");

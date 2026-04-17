@@ -14,7 +14,6 @@ public class CompaniesController implements CompaniesApi {
     @Autowired
     private CompanyService companyService;
 
-    // GET /companies
     @Override
     public ResponseEntity<List<CompanyDTO>> getCompanies() {
         List<CompanyDTO> companies = companyService.getAllCompanies();

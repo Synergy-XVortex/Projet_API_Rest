@@ -20,19 +20,17 @@ public class InternshipsController implements InternshipsApi {
     @Autowired
     private InternshipService internshipService;
 
-    // PATCH /internships/{id}/status (Utilisé par le professeur)
     @Override
     public ResponseEntity<Void> updateInternshipStatus(@NotNull Integer id,
             @Valid UpdateInternshipStatusRequest updateInternshipStatusRequest) {
-        
+
         // On récupère le statut depuis l'objet de requête généré par OpenAPI
         String newStatus = updateInternshipStatusRequest.getStatus().getValue();
-        
+
         internshipService.updateStatus(id.longValue(), newStatus);
         return ResponseEntity.ok().build();
     }
 
-    // GET /internships (Recherche avec filtres optionnels)
     @Override
     public ResponseEntity<List<InternshipDTO>> getInternships(String studentEmail, String status) {
         List<InternshipDTO> internships = internshipService.getInternships(studentEmail, status);

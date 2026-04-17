@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@PreAuthorize("hasRole('ADMINISTRATOR')") 
+@PreAuthorize("hasRole('ADMINISTRATOR')")
 public class AdministratorOnlyController implements AdministratorOnlyApi {
 
     @Autowired
@@ -26,7 +26,7 @@ public class AdministratorOnlyController implements AdministratorOnlyApi {
     @Autowired
     private InternshipService internshipService;
 
-    @Autowired 
+    @Autowired
     private DefenseService defenseService;
 
     @Override
@@ -59,9 +59,6 @@ public class AdministratorOnlyController implements AdministratorOnlyApi {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    /**
-     * Assigne un étudiant et/ou un tuteur à un stage
-     */
     @Override
     public ResponseEntity<Void> assignUsersToInternship(@NotNull Integer id, @Valid InternshipDTO internshipDTO) {
         // On convertit l'Integer id en Long pour le service
@@ -69,18 +66,12 @@ public class AdministratorOnlyController implements AdministratorOnlyApi {
         return ResponseEntity.ok().build();
     }
 
-    /**
-     * Supprime un utilisateur par son email (Clé primaire)
-     */
     @Override
     public ResponseEntity<Void> deleteUser(@NotNull String email) {
         userService.removeUser(email);
         return ResponseEntity.noContent().build();
     }
 
-    /**
-     * Met à jour les informations d'un utilisateur
-     */
     @Override
     public ResponseEntity<Void> updateUser(@NotNull String email, @Valid UserDTO userDTO) {
         userService.updateUser(email, userDTO);

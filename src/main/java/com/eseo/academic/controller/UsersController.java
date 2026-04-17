@@ -25,9 +25,8 @@ public class UsersController implements UsersApi {
 
     @Override
     public ResponseEntity<UserDTO> getMyProfile() {
-        // L'email est extrait du token JWT par ton JwtAuthenticationFilter
         String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        
+
         UserDTO user = userService.getUserByEmail(email);
         return ResponseEntity.ok(user);
     }
@@ -35,8 +34,7 @@ public class UsersController implements UsersApi {
     @Override
     public ResponseEntity<UserDTO> updateMyProfile(UserDTO userDTO) {
         String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        
-        // On utilise une méthode spécifique dans le service pour ne pas tout modifier
+
         UserDTO updated = userService.updateUserPersonal(email, userDTO);
         return ResponseEntity.ok(updated);
     }

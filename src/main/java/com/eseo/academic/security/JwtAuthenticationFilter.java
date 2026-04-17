@@ -15,12 +15,14 @@ import java.util.List;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-    @Autowired private JwtUtils jwtUtils;
+
+    @Autowired
+    private JwtUtils jwtUtils;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) 
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        
+
         String header = request.getHeader("Authorization");
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7);
@@ -30,10 +32,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 // On ajoute "ROLE_" car Spring Security l'attend par défaut pour hasRole()
                 SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + role);
-                
-                UsernamePasswordAuthenticationToken auth = 
-                    new UsernamePasswordAuthenticationToken(email, null, List.of(authority));
-                
+
+                UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(email, null,
+                        List.of(authority));
+
                 SecurityContextHolder.getContext().setAuthentication(auth);
             }
         }

@@ -472,7 +472,6 @@ components:
       properties:
         grade: { type: number, format: float, minimum: 0, maximum: 20 }
         comment: { type: string }
-        date: { type: string, format: date-time }
         teacherEmail: { type: string }
         reportFileName: { type: string }
 

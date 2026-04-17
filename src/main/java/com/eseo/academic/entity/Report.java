@@ -6,8 +6,12 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "reports")
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Report {
+
     @Id
     @Column(name = "file_name", nullable = false)
     private String fileName;
