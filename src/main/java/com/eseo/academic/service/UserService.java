@@ -53,6 +53,10 @@ public class UserService {
         user.setLastName(dto.getLastName());
         user.setMajor(dto.getMajor());
 
+        if (dto.getActive() != null) {
+            user.setActive(dto.getActive());
+        }
+
         userRepository.save(user);
     }
 
@@ -70,6 +74,7 @@ public class UserService {
         dto.setLastName(entity.getLastName());
         dto.setRole(entity.getRole().name());
         dto.setMajor(entity.getMajor());
+        dto.setActive(entity.isActive());
         return dto;
     }
 

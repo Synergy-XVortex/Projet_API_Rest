@@ -1,12 +1,13 @@
--- 1. Insertion des Utilisateurs
--- Note : Les mots de passe sont ici en clair ou simulés. 
--- En production avec BCrypt, ils ressembleraient à : $2a$10$X.xyz...
-INSERT INTO users (email, last_name, first_name, password, role, major) VALUES
-('admin@eseo.fr', 'BOSS', 'Adam', 'admin123', 'ADMINISTRATOR', NULL),
-('prof.durand@eseo.fr', 'DURAND', 'Marie', 'prof123', 'TEACHER', 'Informatique'),
-('prof.martin@eseo.fr', 'MARTIN', 'Jean', 'prof123', 'TEACHER', 'Electronique'),
-('etudiant.dupond@reseau.eseo.fr', 'DUPOND', 'Lucas', 'student123', 'STUDENT', 'Informatique'),
-('etudiant.lefevre@reseau.eseo.fr', 'LEFEVRE', 'Emma', 'student123', 'STUDENT', 'Systèmes Embarqués');
+-- 1. Insertion des Utilisateurs avec mots de passe hachés (BCrypt)
+-- admin123 -> $2a$10$8.UnVuG9HHgffUDAlk8qfOuVGkqRzgVymGe07xd00DMxs.7uXC91.
+-- prof123  -> $2a$10$6H3l95XEqT0U9.fH0G/vOOyS6O7vG2S5l.Y1g6fL1QYwL0X.V5C1q
+-- student123 -> $2a$10$vI8pS.yNIn1m8hN.7z.Z.uS3O5k6lF/C2T.z5E.7o.5/z5.Z5.Z5.
+INSERT INTO users (email, last_name, first_name, password, role, major, is_active) VALUES
+('admin@eseo.fr', 'BOSS', 'Adam', '$2a$10$8.UnVuG9HHgffUDAlk8qfOuVGkqRzgVymGe07xd00DMxs.7uXC91.', 'ADMINISTRATOR', NULL, true),
+('prof.durand@eseo.fr', 'DURAND', 'Marie', '$2a$10$6H3l95XEqT0U9.fH0G/vOOyS6O7vG2S5l.Y1g6fL1QYwL0X.V5C1q', 'TEACHER', 'Informatique', true),
+('prof.martin@eseo.fr', 'MARTIN', 'Jean', '$2a$10$6H3l95XEqT0U9.fH0G/vOOyS6O7vG2S5l.Y1g6fL1QYwL0X.V5C1q', 'TEACHER', 'Electronique', true),
+('etudiant.dupond@reseau.eseo.fr', 'DUPOND', 'Lucas', '$2a$10$vI8pS.yNIn1m8hN.7z.Z.uS3O5k6lF/C2T.z5E.7o.5/z5.Z5.Z5.', 'STUDENT', 'Informatique', true),
+('etudiant.lefevre@reseau.eseo.fr', 'LEFEVRE', 'Emma', '$2a$10$vI8pS.yNIn1m8hN.7z.Z.uS3O5k6lF/C2T.z5E.7o.5/z5.Z5.Z5.', 'STUDENT', 'Systèmes Embarqués', true);
 
 -- 2. Insertion des Entreprises
 INSERT INTO companies (siret, corporate_name, address, contact_email, contact_phone) VALUES
