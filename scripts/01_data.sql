@@ -1,13 +1,14 @@
 -- 1. Insertion des Utilisateurs avec mots de passe hachés (BCrypt)
--- admin123 -> $2a$10$8.UnVuG9HHgffUDAlk8qfOuVGkqRzgVymGe07xd00DMxs.7uXC91.
--- prof123  -> $2a$10$6H3l95XEqT0U9.fH0G/vOOyS6O7vG2S5l.Y1g6fL1QYwL0X.V5C1q
--- student123 -> $2a$10$vI8pS.yNIn1m8hN.7z.Z.uS3O5k6lF/C2T.z5E.7o.5/z5.Z5.Z5.
+-- admin123 
+-- prof1234 
+-- student123
+-- Tous les comptes utilisent désormais le mot de passe valide : admin123
 INSERT INTO users (email, last_name, first_name, password, role, major, is_active) VALUES
-('admin@eseo.fr', 'BOSS', 'Adam', '$2a$10$8.UnVuG9HHgffUDAlk8qfOuVGkqRzgVymGe07xd00DMxs.7uXC91.', 'ADMINISTRATOR', NULL, true),
-('prof.durand@eseo.fr', 'DURAND', 'Marie', '$2a$10$6H3l95XEqT0U9.fH0G/vOOyS6O7vG2S5l.Y1g6fL1QYwL0X.V5C1q', 'TEACHER', 'Informatique', true),
-('prof.martin@eseo.fr', 'MARTIN', 'Jean', '$2a$10$6H3l95XEqT0U9.fH0G/vOOyS6O7vG2S5l.Y1g6fL1QYwL0X.V5C1q', 'TEACHER', 'Electronique', true),
-('etudiant.dupond@reseau.eseo.fr', 'DUPOND', 'Lucas', '$2a$10$vI8pS.yNIn1m8hN.7z.Z.uS3O5k6lF/C2T.z5E.7o.5/z5.Z5.Z5.', 'STUDENT', 'Informatique', true),
-('etudiant.lefevre@reseau.eseo.fr', 'LEFEVRE', 'Emma', '$2a$10$vI8pS.yNIn1m8hN.7z.Z.uS3O5k6lF/C2T.z5E.7o.5/z5.Z5.Z5.', 'STUDENT', 'Systèmes Embarqués', true);
+('admin@eseo.fr', 'ADMIN', 'Super', '$2a$10$Tj8YNHLA1GNOSiWJvKtkjOopSgfc6jsMTwsc60DwS0wEyjibXwsTW', 'ADMINISTRATOR', NULL, true),
+('prof.durand@eseo.fr', 'DURAND', 'Marie', '$2a$10$XHGfJE.OlsKCFR0RUe4u3OehZu297DXc8D0LaVPU8g0rDLnNqdzae', 'TEACHER', 'Informatique', true),
+('prof.martin@eseo.fr', 'MARTIN', 'Jean', '$2a$10$XHGfJE.OlsKCFR0RUe4u3OehZu297DXc8D0LaVPU8g0rDLnNqdzae', 'TEACHER', 'Electronique', true),
+('etudiant.dupond@reseau.eseo.fr', 'DUPOND', 'Lucas', '$2a$10$QgltEc89xP/LSqrTdqjGy.wYAcAR8VmqUvFBpjxT0e1wPc/b7OBX2', 'STUDENT', 'Informatique', true),
+('etudiant.lefevre@reseau.eseo.fr', 'LEFEVRE', 'Emma', '$2a$10$QgltEc89xP/LSqrTdqjGy.wYAcAR8VmqUvFBpjxT0e1wPc/b7OBX2', 'STUDENT', 'Systèmes Embarqués', true);
 
 -- 2. Insertion des Entreprises
 INSERT INTO companies (siret, corporate_name, address, contact_email, contact_phone) VALUES
