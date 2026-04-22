@@ -38,4 +38,11 @@ public class UsersController implements UsersApi {
         UserDTO updated = userService.updateUserPersonal(email, userDTO);
         return ResponseEntity.ok(updated);
     }
+
+    // À ajouter dans UsersController.java
+    @DeleteMapping("/{email}")
+    public ResponseEntity<Void> deleteUser(@PathVariable String email) {
+        userService.removeUser(email);
+        return ResponseEntity.noContent().build();
+    }
 }

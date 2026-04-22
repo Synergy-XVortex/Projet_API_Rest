@@ -15,7 +15,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
 @RestController
-public class InternshipsController implements InternshipsApi {
+public class InternshipController implements InternshipsApi {
 
     @Autowired
     private InternshipService internshipService;
@@ -35,5 +35,11 @@ public class InternshipsController implements InternshipsApi {
     public ResponseEntity<List<InternshipDTO>> getInternships(String studentEmail, String status) {
         List<InternshipDTO> internships = internshipService.getInternships(studentEmail, status);
         return ResponseEntity.ok(internships);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteInternship(@PathVariable Integer id) {
+        internshipService.deleteInternship(id.longValue());
+        return ResponseEntity.noContent().build();
     }
 }

@@ -9,8 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-// Retirez temporairement le @RequestMapping("/companies") ici 
-// car l'interface CompaniesApi le gère probablement déjà.
 @CrossOrigin(origins = "http://localhost:5173") 
 public class CompaniesController implements CompaniesApi {
 
@@ -23,10 +21,6 @@ public class CompaniesController implements CompaniesApi {
         return ResponseEntity.ok(companies);
     }
 
-    /**
-     * Utilisez @Override pour être certain de respecter l'interface Swagger.
-     * Assurez-vous que le nom 'updateCompany' est bien celui défini dans CompaniesApi.
-     */
     @Override
     public ResponseEntity<CompanyDTO> updateCompany(
             @PathVariable("siret") String siret, 
@@ -36,4 +30,17 @@ public class CompaniesController implements CompaniesApi {
         return ResponseEntity.ok(updatedCompany);
     }
 
+    // AJOUT DE L'ANNOTATION ICI !
+    @PostMapping
+    public ResponseEntity<Void> addCompany(@RequestBody CompanyDTO companyDTO) {
+        // Cette fois-ci, Spring Boot va bien appeler votre service
+        companyService.saveCompany(companyDTO);
+        return ResponseEntity.status(201).build(); // 201 Created
+    }
+
+    @DeleteMapping("/{siret}")
+    public ResponseEntity<Void> deleteCompany(@PathVariable String siret) {
+        companyService.deleteCompany(siret);
+        return ResponseEntity.noContent().build();
+    }
 }
