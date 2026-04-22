@@ -39,7 +39,10 @@ public class CompanyService {
         return convertToDTO(company);
     }
 
-    public void updateCompany(String siret, CompanyDTO dto) {
+    /**
+     * Met à jour une entreprise et retourne le DTO mis à jour.
+     */
+    public CompanyDTO updateCompany(String siret, CompanyDTO dto) {
         Company company = companyRepository.findById(siret)
                 .orElseThrow(() -> new EntityNotFoundException("Company not found"));
 
@@ -48,7 +51,11 @@ public class CompanyService {
         company.setContactEmail(dto.getContactEmail());
         company.setContactPhone(dto.getContactPhone());
 
-        companyRepository.save(company);
+        // Sauvegarde de l'entité mise à jour
+        Company savedCompany = companyRepository.save(company);
+        
+        // Retour du DTO converti
+        return convertToDTO(savedCompany);
     }
 
     public void deleteCompany(String siret) {

@@ -8,7 +8,7 @@ INSERT INTO users (email, last_name, first_name, password, role, major, is_activ
 ('prof.durand@eseo.fr', 'DURAND', 'Marie', '$2a$10$XHGfJE.OlsKCFR0RUe4u3OehZu297DXc8D0LaVPU8g0rDLnNqdzae', 'TEACHER', 'Informatique', true),
 ('prof.martin@eseo.fr', 'MARTIN', 'Jean', '$2a$10$XHGfJE.OlsKCFR0RUe4u3OehZu297DXc8D0LaVPU8g0rDLnNqdzae', 'TEACHER', 'Electronique', true),
 ('etudiant.dupond@reseau.eseo.fr', 'DUPOND', 'Lucas', '$2a$10$QgltEc89xP/LSqrTdqjGy.wYAcAR8VmqUvFBpjxT0e1wPc/b7OBX2', 'STUDENT', 'Informatique', true),
-('etudiant.lefevre@reseau.eseo.fr', 'LEFEVRE', 'Emma', '$2a$10$QgltEc89xP/LSqrTdqjGy.wYAcAR8VmqUvFBpjxT0e1wPc/b7OBX2', 'STUDENT', 'Systèmes Embarqués', true);
+('etudiant.lefevre@reseau.eseo.fr', 'LEFEVRE', 'Emma', '$2a$10$QgltEc89xP/LSqrTdqjGy.wYAcAR8VmqUvFBpjxT0e1wPc/b7OBX2', 'STUDENT', 'Systemes Embarques', true);
 
 -- 2. Insertion des Entreprises
 INSERT INTO companies (siret, corporate_name, address, contact_email, contact_phone) VALUES

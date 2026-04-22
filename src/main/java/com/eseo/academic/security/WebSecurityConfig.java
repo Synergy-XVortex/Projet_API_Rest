@@ -13,6 +13,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.http.HttpMethod;
 
 import java.util.Arrays;
 
@@ -30,18 +31,27 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        // 1. On active le CORS ici
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
+                // Autorisations publiques (Swagger + Auth)
                 .requestMatchers(
                     "/v3/api-docs/**",
                     "/swagger-ui/**",
                     "/swagger-ui.html",
-                    "/webjars/**")
-                .permitAll()
+                    "/webjars/**",
+                    "/error").permitAll()
                 .requestMatchers("/auth/**").permitAll()
+                
+                // --- PROTECTION DES ROUTES ---
+                // CRITIQUE : Toujours autoriser OPTIONS pour le CORS
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                
+                // Autoriser le PUT sur les entreprises pour les utilisateurs authentifiés
+                .requestMatchers(HttpMethod.PUT, "/companies/**").authenticated()
+                
+                // Toutes les autres requêtes doivent être authentifiées
                 .anyRequest().authenticated());
 
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
@@ -49,19 +59,17 @@ public class WebSecurityConfig {
         return http.build();
     }
 
-    /**
-     * Configuration globale du CORS pour autoriser le Frontend React
-     */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // On autorise spécifiquement le port par défaut de Vite (React)
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+        // On autorise explicitement toutes les méthodes nécessaires
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+        // Autoriser l'envoi des credentials (si nécessaire pour les cookies/headers)
+        configuration.setAllowCredentials(true);
         
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        // On applique cette règle sur toutes les routes de l'API
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }

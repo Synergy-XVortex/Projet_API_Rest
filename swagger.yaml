@@ -192,6 +192,31 @@ paths:
         '201':
           description: Company added successfully
 
+  /companies/{siret}:
+    parameters:
+      - name: siret
+        in: path
+        required: true
+        schema:
+          type: string
+    put:
+      tags: [Companies] # On garde uniquement ce tag
+      summary: "[ADMIN] Update company details"
+      operationId: updateCompany
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CompanyDTO'
+      responses:
+        '200':
+          description: Company updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompanyDTO'
+
   # --- INTERNSHIPS ---
   /internships:
     get:
