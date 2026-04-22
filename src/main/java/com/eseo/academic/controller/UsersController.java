@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import com.eseo.academic.service.UserService;
 
@@ -39,7 +41,6 @@ public class UsersController implements UsersApi {
         return ResponseEntity.ok(updated);
     }
 
-    // À ajouter dans UsersController.java
     @DeleteMapping("/{email}")
     public ResponseEntity<Void> deleteUser(@PathVariable String email) {
         userService.removeUser(email);

@@ -38,8 +38,10 @@ public class CompaniesController implements CompaniesApi {
         return ResponseEntity.status(201).build(); // 201 Created
     }
 
+    // À ajouter dans CompaniesController.java
     @DeleteMapping("/{siret}")
     public ResponseEntity<Void> deleteCompany(@PathVariable String siret) {
+        // La méthode deleteCompany existe déjà dans votre service
         companyService.deleteCompany(siret);
         return ResponseEntity.noContent().build();
     }

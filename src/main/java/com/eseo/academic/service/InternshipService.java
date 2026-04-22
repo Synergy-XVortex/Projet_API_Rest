@@ -96,4 +96,11 @@ public class InternshipService {
 
         return dto;
     }
+
+    public void deleteInternship(Long id) {
+        if (!internshipRepository.existsById(id)) {
+            throw new EntityNotFoundException("Cannot delete: Internship not found");
+        }
+        internshipRepository.deleteById(id);
+    }
 }
