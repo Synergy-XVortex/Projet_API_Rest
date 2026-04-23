@@ -200,7 +200,7 @@ paths:
         schema:
           type: string
     put:
-      tags: [Companies] # On garde uniquement ce tag
+      tags: [Companies] 
       summary: "[ADMIN] Update company details"
       operationId: updateCompany
       requestBody:
@@ -216,6 +216,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CompanyDTO'
+    delete:
+      tags: [Companies]
+      summary: "[ADMIN] Delete a company"
+      operationId: deleteCompany
+      responses:
+        '204':
+          description: Company deleted successfully
 
   # --- INTERNSHIPS ---
   /internships:

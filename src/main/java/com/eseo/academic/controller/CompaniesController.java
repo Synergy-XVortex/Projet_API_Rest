@@ -6,7 +6,8 @@ import org.openapitools.api.CompaniesApi;
 import org.openapitools.model.CompanyDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:5173") 
@@ -22,27 +23,18 @@ public class CompaniesController implements CompaniesApi {
     }
 
     @Override
-    public ResponseEntity<CompanyDTO> updateCompany(
-            @PathVariable("siret") String siret, 
-            @RequestBody CompanyDTO companyDTO) {
-        
+    public ResponseEntity<CompanyDTO> updateCompany(String siret, CompanyDTO companyDTO) {
         CompanyDTO updatedCompany = companyService.updateCompany(siret, companyDTO);
         return ResponseEntity.ok(updatedCompany);
     }
 
-    // AJOUT DE L'ANNOTATION ICI !
-    @PostMapping
-    public ResponseEntity<Void> addCompany(@RequestBody CompanyDTO companyDTO) {
-        // Cette fois-ci, Spring Boot va bien appeler votre service
-        companyService.saveCompany(companyDTO);
-        return ResponseEntity.status(201).build(); // 201 Created
-    }
-
-    // À ajouter dans CompaniesController.java
-    @DeleteMapping("/{siret}")
-    public ResponseEntity<Void> deleteCompany(@PathVariable String siret) {
-        // La méthode deleteCompany existe déjà dans votre service
+    // La route de suppression générée par Swagger est proprement interceptée ici
+    @Override
+    public ResponseEntity<Void> deleteCompany(String siret) {
         companyService.deleteCompany(siret);
         return ResponseEntity.noContent().build();
     }
+    
+    // Note : Plus besoin d'ajouter @PostMapping pour la création ici, 
+    // car votre AdministratorOnlyController le gère déjà parfaitement !
 }
