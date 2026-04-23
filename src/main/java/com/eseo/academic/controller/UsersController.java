@@ -6,8 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import com.eseo.academic.service.UserService;
 
@@ -28,22 +27,14 @@ public class UsersController implements UsersApi {
     @Override
     public ResponseEntity<UserDTO> getMyProfile() {
         String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
         UserDTO user = userService.getUserByEmail(email);
         return ResponseEntity.ok(user);
     }
 
     @Override
-    public ResponseEntity<UserDTO> updateMyProfile(UserDTO userDTO) {
+    public ResponseEntity<UserDTO> updateMyProfile(@RequestBody UserDTO userDTO) {
         String email = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
         UserDTO updated = userService.updateUserPersonal(email, userDTO);
         return ResponseEntity.ok(updated);
-    }
-
-    @DeleteMapping("/{email}")
-    public ResponseEntity<Void> deleteUser(@PathVariable String email) {
-        userService.removeUser(email);
-        return ResponseEntity.noContent().build();
     }
 }

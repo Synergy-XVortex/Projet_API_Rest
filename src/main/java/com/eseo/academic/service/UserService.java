@@ -10,7 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.eseo.academic.entity.Role;
-import com.eseo.academic.entity.User; // Ton entité JPA
+import com.eseo.academic.entity.User;
 import com.eseo.academic.repository.UserRepository;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -49,12 +49,35 @@ public class UserService {
         User user = userRepository.findById(email)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-        user.setFirstName(dto.getFirstName());
-        user.setLastName(dto.getLastName());
-        user.setMajor(dto.getMajor());
+        // Mise à jour des champs qui fonctionnent
+        if (dto.getFirstName() != null) user.setFirstName(dto.getFirstName());
+        if (dto.getLastName() != null) user.setLastName(dto.getLastName());
+        if (dto.getMajor() != null) user.setMajor(dto.getMajor());
+        if (dto.getActive() != null) user.setActive(dto.getActive());
 
-        if (dto.getActive() != null) {
-            user.setActive(dto.getActive());
+        // --- NOUVELLE GESTION DU RÔLE ---
+        if (dto.getRole() != null && !dto.getRole().trim().isEmpty()) {
+            
+            // 1. On nettoie la chaîne reçue (enlève les espaces et met en majuscules)
+            String roleStr = dto.getRole().trim().toUpperCase();
+            System.out.println("--- TENTATIVE DE CHANGEMENT DE ROLE VERS : '" + roleStr + "' ---");
+            
+            try {
+                // 2. On essaie de l'affecter normalement
+                user.setRole(Role.valueOf(roleStr));
+                System.out.println("SUCCES : Le rôle a été modifié en " + roleStr);
+                
+            } catch (IllegalArgumentException e) {
+                // 3. Si ça plante, on essaie avec le préfixe "ROLE_" (très courant en Spring Security)
+                try {
+                    user.setRole(Role.valueOf("ROLE_" + roleStr));
+                    System.out.println("SUCCES : Le rôle a été modifié avec le préfixe ROLE_" + roleStr);
+                } catch (IllegalArgumentException ex) {
+                    // 4. Si ça plante toujours, on l'affiche EN ROUGE dans votre console au lieu de le cacher !
+                    System.err.println("ERREUR FATALE : Le rôle '" + roleStr + "' n'existe pas dans votre Enum Role.java !");
+                    throw new IllegalArgumentException("Rôle invalide : " + roleStr);
+                }
+            }
         }
 
         userRepository.save(user);
@@ -101,10 +124,15 @@ public class UserService {
 
     public void activateUser(String email) {
         User user = userRepository.findById(email)
-                .orElseThrow(() -> new EntityNotFoundException("Utilisateur non trouvé avec l'email : " + email));
+                .orElseThrow(() -> new EntityNotFoundException("User not found: " + email));
 
         user.setActive(true);
-
         userRepository.save(user);
+    }
+
+    public List<UserDTO> getAllUsers() {
+        return userRepository.findAll().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 }
