@@ -54,9 +54,15 @@ public class AdministratorOnlyController implements AdministratorOnlyApi {
     }
 
     @Override
-    public ResponseEntity<Void> assignUsersToInternship(@NotNull Integer id, @Valid @RequestBody InternshipDTO internshipDTO) {
-        internshipService.assignParticipants(id.longValue(), internshipDTO);
+    public ResponseEntity<Void> updateInternship(@NotNull Integer id, @Valid @RequestBody InternshipDTO internshipDTO) {
+        internshipService.updateInternship(id.longValue(), internshipDTO);
         return ResponseEntity.ok().build();
+    }
+
+    @Override
+    public ResponseEntity<Void> deleteInternship(@NotNull Integer id) {
+        internshipService.deleteInternship(id.longValue());
+        return ResponseEntity.noContent().build();
     }
 
     @Override

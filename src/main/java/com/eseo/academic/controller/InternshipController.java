@@ -1,47 +1,29 @@
 package com.eseo.academic.controller;
 
 import java.util.List;
-
 import org.openapitools.api.InternshipsApi;
 import org.openapitools.model.InternshipDTO;
 import org.openapitools.model.UpdateInternshipStatusRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.eseo.academic.service.InternshipService;
-
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
 @RestController
 public class InternshipController implements InternshipsApi {
 
-    @Autowired
-    private InternshipService internshipService;
+    @Autowired private InternshipService internshipService;
 
     @Override
-    public ResponseEntity<Void> updateInternshipStatus(@NotNull Integer id,
-            @Valid UpdateInternshipStatusRequest updateInternshipStatusRequest) {
-
-        // On récupère le statut depuis l'objet de requête généré par OpenAPI
-        String newStatus = updateInternshipStatusRequest.getStatus().getValue();
-
-        internshipService.updateStatus(id.longValue(), newStatus);
+    public ResponseEntity<Void> updateInternshipStatus(@NotNull Integer id, @Valid UpdateInternshipStatusRequest updateInternshipStatusRequest) {
+        internshipService.updateStatus(id.longValue(), updateInternshipStatusRequest.getStatus().getValue());
         return ResponseEntity.ok().build();
     }
 
     @Override
     public ResponseEntity<List<InternshipDTO>> getInternships(String studentEmail, String status) {
-        List<InternshipDTO> internships = internshipService.getInternships(studentEmail, status);
-        return ResponseEntity.ok(internships);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteInternship(@PathVariable Integer id) {
-        internshipService.deleteInternship(id.longValue());
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(internshipService.getInternships(studentEmail, status));
     }
 }

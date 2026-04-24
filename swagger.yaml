@@ -272,8 +272,8 @@ paths:
           type: integer
     put:
       tags: [Administrator Only, Internships]
-      summary: "[ADMIN] Assign student and teacher to internship"
-      operationId: assignUsersToInternship
+      summary: "[ADMIN] Update full internship details"
+      operationId: updateInternship
       requestBody:
         required: true
         content:
@@ -282,7 +282,14 @@ paths:
               $ref: '#/components/schemas/InternshipDTO'
       responses:
         '200':
-          description: Internship updated/assigned successfully
+          description: Internship updated successfully
+    delete:
+      tags: [Administrator Only, Internships]
+      summary: "[ADMIN] Delete an internship"
+      operationId: deleteInternship
+      responses:
+        '204':
+          description: Internship deleted successfully
 
   /internships/{id}/status:
     parameters:
