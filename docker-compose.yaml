@@ -22,7 +22,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    
+    volumes:
+      - ./uploads:/uploads
 
 volumes:
   mysql-data:

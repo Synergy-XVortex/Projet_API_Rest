@@ -8,6 +8,7 @@ import org.openapitools.model.ReportDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,6 +17,7 @@ import com.eseo.academic.service.ReportService;
 import jakarta.validation.constraints.NotNull;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:5173") // <-- LA CORRECTION CORS EST LÀ
 public class ReportsController implements ReportsEvaluationsApi {
 
     @Autowired
@@ -33,6 +35,7 @@ public class ReportsController implements ReportsEvaluationsApi {
             reportService.saveReport(id.longValue(), file);
             return new ResponseEntity<>(HttpStatus.CREATED);
         } catch (IOException e) {
+            e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

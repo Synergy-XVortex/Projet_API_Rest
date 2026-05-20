@@ -19,6 +19,10 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
@@ -41,13 +45,29 @@ public class ReportService {
         Internship internship = internshipRepository.findById(internshipId)
                 .orElseThrow(() -> new EntityNotFoundException("Internship not found"));
 
+        // --- 1. CRÉATION DU DOSSIER PHYSIQUE ---
+        String uploadDir = "/uploads/reports/";
+        Path uploadPath = Paths.get(uploadDir);
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
+
+        // --- 2. SAUVEGARDE PHYSIQUE DU FICHIER ---
+        // Nettoyage du nom et ajout d'un timestamp pour garantir l'unicité
+        String originalFileName = file.getOriginalFilename();
+        String cleanFileName = originalFileName != null ? originalFileName.replaceAll("[^a-zA-Z0-9\\.\\-]", "_") : "report.pdf";
+        String safeFileName = System.currentTimeMillis() + "_" + cleanFileName;
+        
+        Path filePath = uploadPath.resolve(safeFileName);
+        Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+        // --- 3. SAUVEGARDE EN BASE DE DONNÉES ---
         Report report = reportRepository.findByInternship_Id(internshipId).orElse(new Report());
 
         report.setInternship(internship);
-        report.setFileName(file.getOriginalFilename());
-        // Attention : En prod, on utilise souvent un UUID pour éviter les doublons de noms
-        report.setStoragePath("/uploads/reports/" + file.getOriginalFilename());
-        report.setSubmissionDate(LocalDateTime.now()); // Optionnel : pour tracer la date d'envoi
+        report.setFileName(originalFileName); // On garde le joli nom pour l'affichage
+        report.setStoragePath(filePath.toString()); // On garde le vrai nom système pour le retrouver
+        report.setSubmissionDate(LocalDateTime.now()); 
 
         reportRepository.save(report);
     }
@@ -86,6 +106,21 @@ public class ReportService {
             dto.setSubmissionDate(entity.getSubmissionDate().atOffset(ZoneOffset.UTC));
 
         dto.setInternshipId(entity.getInternship().getId());
+
+        // --- RÉCUPÉRATION DE L'ÉVALUATION ---
+        evaluationRepository.findById(entity.getFileName()).ifPresent(eval -> {
+            EvaluationDTO evalDTO = new EvaluationDTO();
+            if (eval.getGrade() != null) {
+                evalDTO.setGrade(eval.getGrade().floatValue());
+            }
+            evalDTO.setComment(eval.getComment());
+            if (eval.getTeacher() != null) {
+                evalDTO.setTeacherEmail(eval.getTeacher().getEmail());
+            }
+            evalDTO.setReportFileName(entity.getFileName());
+            dto.setEvaluation(evalDTO);
+        });
+
         return dto;
     }
 }
