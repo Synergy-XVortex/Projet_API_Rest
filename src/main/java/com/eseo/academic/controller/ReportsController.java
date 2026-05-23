@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -54,14 +55,25 @@ public class ReportsController implements ReportsEvaluationsApi {
         return ResponseEntity.ok().build();
     }
 
-    // --- NOUVELLE ROUTE : Permet de télécharger le PDF ---
     @GetMapping("/reports/{fileName}/download")
     public ResponseEntity<Resource> downloadReport(@PathVariable String fileName) {
         Resource resource = reportService.loadReportAsResource(fileName);
-        
         return ResponseEntity.ok()
                 .contentType(MediaType.APPLICATION_PDF)
                 .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
+    }
+
+    // --- NOUVELLE ROUTE : Permet de supprimer le PDF ---
+    @DeleteMapping("/internships/{id}/report")
+    public ResponseEntity<Void> deleteReport(@PathVariable Integer id) {
+        try {
+            reportService.deleteReport(id.longValue());
+            return ResponseEntity.noContent().build();
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build(); // 403 si déjà noté
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
     }
 }

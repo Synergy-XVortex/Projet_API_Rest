@@ -37,6 +37,7 @@ public class ReportService {
     @Autowired private UserRepository userRepository;
     @Autowired private EvaluationRepository evaluationRepository;
 
+    @Transactional
     public void saveReport(Long internshipId, MultipartFile file) throws IOException {
         Internship internship = internshipRepository.findById(internshipId)
                 .orElseThrow(() -> new EntityNotFoundException("Internship not found"));
@@ -47,6 +48,18 @@ public class ReportService {
             Files.createDirectories(uploadPath);
         }
 
+        // Récupérer le rapport existant ou en créer un nouveau
+        Report report = reportRepository.findByInternship_Id(internshipId).orElse(new Report());
+
+        // --- NOUVEAU : Si on remplace, on supprime l'ancien PDF physique ---
+        if (report.getStoragePath() != null) {
+            try {
+                Files.deleteIfExists(Paths.get(report.getStoragePath()));
+            } catch (IOException e) {
+                System.err.println("Could not delete old file: " + e.getMessage());
+            }
+        }
+
         String originalFileName = file.getOriginalFilename();
         String cleanFileName = originalFileName != null ? originalFileName.replaceAll("[^a-zA-Z0-9\\.\\-]", "_") : "report.pdf";
         String safeFileName = System.currentTimeMillis() + "_" + cleanFileName;
@@ -54,14 +67,34 @@ public class ReportService {
         Path filePath = uploadPath.resolve(safeFileName);
         Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-        Report report = reportRepository.findByInternship_Id(internshipId).orElse(new Report());
-
         report.setInternship(internship);
         report.setFileName(originalFileName); 
         report.setStoragePath(filePath.toString()); 
         report.setSubmissionDate(LocalDateTime.now()); 
 
         reportRepository.save(report);
+    }
+
+    // --- NOUVELLE MÉTHODE : Supprimer le rapport ---
+    @Transactional
+    public void deleteReport(Long internshipId) {
+        Report report = reportRepository.findByInternship_Id(internshipId)
+                .orElseThrow(() -> new EntityNotFoundException("Report not found"));
+
+        // Sécurité : Impossible de supprimer si déjà noté
+        if (evaluationRepository.existsById(report.getFileName())) {
+            throw new IllegalStateException("Cannot delete a graded report.");
+        }
+
+        // Suppression physique du fichier
+        try {
+            Files.deleteIfExists(Paths.get(report.getStoragePath()));
+        } catch (IOException e) {
+            System.err.println("Error deleting file physically: " + e.getMessage());
+        }
+
+        // Suppression en base de données
+        reportRepository.delete(report);
     }
 
     @Transactional
@@ -88,7 +121,6 @@ public class ReportService {
         return convertToDTO(report);
     }
 
-    // --- NOUVELLE MÉTHODE : Charge le fichier en mémoire ---
     public Resource loadReportAsResource(String fileName) {
         Report report = reportRepository.findById(fileName)
                 .orElseThrow(() -> new EntityNotFoundException("Report not found: " + fileName));
