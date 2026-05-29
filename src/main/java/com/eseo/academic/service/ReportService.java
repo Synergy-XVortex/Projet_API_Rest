@@ -4,10 +4,12 @@ import com.eseo.academic.entity.Evaluation;
 import com.eseo.academic.entity.Internship;
 import com.eseo.academic.entity.Report;
 import com.eseo.academic.entity.User;
+import com.eseo.academic.entity.Notification;
 import com.eseo.academic.repository.EvaluationRepository;
 import com.eseo.academic.repository.InternshipRepository;
 import com.eseo.academic.repository.ReportRepository;
 import com.eseo.academic.repository.UserRepository;
+import com.eseo.academic.repository.NotificationRepository;
 
 import org.openapitools.model.EvaluationDTO;
 import org.openapitools.model.ReportDTO;
@@ -36,6 +38,7 @@ public class ReportService {
     @Autowired private InternshipRepository internshipRepository;
     @Autowired private UserRepository userRepository;
     @Autowired private EvaluationRepository evaluationRepository;
+    @Autowired private NotificationRepository notificationRepository; // <-- NOUVEAU
 
     @Transactional
     public void saveReport(Long internshipId, MultipartFile file) throws IOException {
@@ -48,10 +51,8 @@ public class ReportService {
             Files.createDirectories(uploadPath);
         }
 
-        // Récupérer le rapport existant ou en créer un nouveau
         Report report = reportRepository.findByInternship_Id(internshipId).orElse(new Report());
 
-        // --- NOUVEAU : Si on remplace, on supprime l'ancien PDF physique ---
         if (report.getStoragePath() != null) {
             try {
                 Files.deleteIfExists(Paths.get(report.getStoragePath()));
@@ -73,27 +74,33 @@ public class ReportService {
         report.setSubmissionDate(LocalDateTime.now()); 
 
         reportRepository.save(report);
+
+        // --- NOUVEAU : Notify teacher when report is uploaded ---
+        if (internship.getTeacher() != null && internship.getStudent() != null) {
+            Notification notification = new Notification();
+            notification.setRecipientEmail(internship.getTeacher().getEmail());
+            notification.setMessage("A new report has been uploaded by " + internship.getStudent().getFirstName() + " " + internship.getStudent().getLastName() + ".");
+            notification.setCreatedAt(LocalDateTime.now());
+            notification.setRead(false);
+            notificationRepository.save(notification);
+        }
     }
 
-    // --- NOUVELLE MÉTHODE : Supprimer le rapport ---
     @Transactional
     public void deleteReport(Long internshipId) {
         Report report = reportRepository.findByInternship_Id(internshipId)
                 .orElseThrow(() -> new EntityNotFoundException("Report not found"));
 
-        // Sécurité : Impossible de supprimer si déjà noté
         if (evaluationRepository.existsById(report.getFileName())) {
             throw new IllegalStateException("Cannot delete a graded report.");
         }
 
-        // Suppression physique du fichier
         try {
             Files.deleteIfExists(Paths.get(report.getStoragePath()));
         } catch (IOException e) {
             System.err.println("Error deleting file physically: " + e.getMessage());
         }
 
-        // Suppression en base de données
         reportRepository.delete(report);
     }
 
@@ -113,6 +120,16 @@ public class ReportService {
         evaluation.setTeacher(teacher);
 
         evaluationRepository.save(evaluation);
+
+        // --- NOUVEAU : Notify student when graded ---
+        if (report.getInternship().getStudent() != null) {
+            Notification notification = new Notification();
+            notification.setRecipientEmail(report.getInternship().getStudent().getEmail());
+            notification.setMessage("Your report has been evaluated. Grade: " + dto.getGrade() + "/20.");
+            notification.setCreatedAt(LocalDateTime.now());
+            notification.setRead(false);
+            notificationRepository.save(notification);
+        }
     }
 
     public ReportDTO getReportByInternship(Long internshipId) {
